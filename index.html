@@ -12,7 +12,9 @@
             <h1>AutoTurno</h1>
             <p>¿Quién sos?</p>
             <input type="text" id="username-input" placeholder="Escribí tu nombre..." autofocus>
-            <button id="login-btn" disabled>Ingresar</button>
+            <button id="login-btn" disabled>Ingresar con Google</button>
+            <p id="login-error" class="modal-error"></p>
+            <small class="login-hint">Te pedirá entrar con tu cuenta de Google para que solo la familia pueda reservar.</small>
         </div>
     </div>
 
@@ -20,6 +22,7 @@
         <header>
             <h1>AutoTurno</h1>
             <p>Bienvenido, <span id="user-display"></span></p>
+            <span id="sync-status" class="sync-status syncing">⏳ Sincronizando...</span>
         </header>
 
         <div class="dashboard">
@@ -38,6 +41,14 @@
                 <div class="details" id="fox-details"></div>
                 <button id="fox-btn" class="action-btn">Reservar</button>
             </div>
+
+            <div class="car-card any-card" id="any-card">
+                <div class="car-icon">🎲</div>
+                <h2>Me da lo mismo</h2>
+                <div class="status" id="any-status">Auto libre</div>
+                <div class="details any-details">Te asignamos el que esté disponible</div>
+                <button id="any-btn" class="action-btn any-btn">Reservar cualquiera</button>
+            </div>
         </div>
 
         <div class="queue-section">
@@ -48,6 +59,42 @@
             <div id="empty-queue" class="empty-msg">No hay reservas pendientes. ¡Sos el primero!</div>
         </div>
     </div>
+
+    <!-- Modal de Reserva -->
+    <div id="reservation-modal" class="modal">
+        <div class="modal-content">
+            <button id="close-modal" class="modal-close">✕</button>
+            <h2>Nueva Reserva</h2>
+            <label>¿Qué auto querés?</label>
+            <div class="car-choice-row">
+                <button id="choice-any" class="choice-btn active">Me da lo mismo</button>
+                <button id="choice-specific" class="choice-btn">Elegir auto</button>
+            </div>
+            <div id="specific-car-options" class="specific-options hidden">
+                <button class="mini-car-btn active" data-car="polo">🚗 Polo</button>
+                <button class="mini-car-btn" data-car="fox">🚙 Fox</button>
+            </div>
+            <label>Fecha</label>
+            <input type="date" id="res-date" required>
+            <div class="time-row">
+                <div class="time-field">
+                    <label>Desde</label>
+                    <input type="time" id="res-start" value="18:00">
+                </div>
+                <div class="time-arrow">→</div>
+                <div class="time-field">
+                    <label>Hasta</label>
+                    <input type="time" id="res-end" value="23:00">
+                </div>
+            </div>
+            <p id="modal-error" class="modal-error"></p>
+            <button id="confirm-reservation-btn" class="confirm-btn">Confirmar Reserva</button>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="firebase-config.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
