@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoTurno - Reserva tu Auto</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="login-screen" class="screen active">
+        <div class="card login-card">
+            <h1>AutoTurno</h1>
+            <p>¿Quién sos?</p>
+            <input type="text" id="username-input" placeholder="Escribí tu nombre..." autofocus>
+            <button id="login-btn" disabled>Ingresar</button>
+        </div>
+    </div>
+
+    <div id="main-screen" class="screen">
+        <header>
+            <h1>AutoTurno</h1>
+            <p>Bienvenido, <span id="user-display"></span></p>
+        </header>
+
+        <div class="dashboard">
+            <div class="car-card" id="polo-card">
+                <div class="car-icon">🚗</div>
+                <h2>Volkswagen Polo</h2>
+                <div class="status" id="polo-status">Libre</div>
+                <div class="details" id="polo-details"></div>
+                <button id="polo-btn" class="action-btn">Reservar</button>
+            </div>
+
+            <div class="car-card" id="fox-card">
+                <div class="car-icon">🚙</div>
+                <h2>Volkswagen Fox</h2>
+                <div class="status" id="fox-status">Libre</div>
+                <div class="details" id="fox-details"></div>
+                <button id="fox-btn" class="action-btn">Reservar</button>
+            </div>
+        </div>
+
+        <div class="queue-section">
+            <h3>Cola de Reservas</h3>
+            <ul id="reservation-list" class="reservation-list">
+                <!-- Items will be injected here -->
+            </ul>
+            <div id="empty-queue" class="empty-msg">No hay reservas pendientes. ¡Sos el primero!</div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
