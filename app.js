@@ -1,5 +1,5 @@
 // =============================================
-//  AutoTurno - App con Firebase (Firestore + Auth)
+//  AutoTurno - App con Firestore (entrada por nombre)
 //  =============================================
 const users = ['Mikel', 'Romina', 'Juani', 'Leire'];
 const priorities = ['Mikel', 'Romina'];
@@ -8,9 +8,8 @@ const cars = {
     fox: { name: 'Volkswagen Fox', icon: '🚙' }
 };
 
-let currentUser = null;      // Nombre elegido (Mikel, Romina, Juani, Leire)
-let currentUid = null;       // Firebase UID para saber quién puede cancelar
-let reservations = [];       // Array sincronizado con Firestore
+let currentUser = null;
+let reservations = [];
 let bookingsLoading = true;
 
 // ---------- Firebase init ----------
@@ -58,41 +57,12 @@ loginBtn.addEventListener('click', () => {
         loginError.style.display = 'block';
         return;
     }
-
-    // Login con Google (popup). Necesita un dominio real (GitHub Pages sirve)
-    loginBtn.disabled = true;
-    loginBtn.textContent = 'Conectando con Google...';
-
-    firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())
-        .then((result) => {
-            currentUid = result.user.uid;
-            currentUser = typedName;
-            enterApp();
-        })
-        .catch((err) => {
-            loginBtn.disabled = false;
-            loginBtn.textContent = 'Ingresar con Google';
-            let msg = 'No se pudo conectar con Google.';
-            if (err.code === 'auth/popup-closed-by-user') {
-                msg = 'Cerraste la ventana de Google. Probá de nuevo.';
-            } else if (err.code === 'auth/popup-blocked') {
-                msg = 'El navegador bloqueó la ventana. Permití popups y probá de nuevo.';
-            } else if (err.code === 'auth/unauthorized-domain') {
-                msg = 'Dominio no autorizado. Agregá el dominio del sitio en Firebase > Authentication > Settings > Authorized domains.';
-            } else {
-                msg = 'Error: ' + (err.message || err.code);
-            }
-            loginError.textContent = msg;
-            loginError.style.display = 'block';
-        });
-});
-
-function enterApp() {
+    currentUser = typedName;
     loginScreen.classList.remove('active');
     mainScreen.classList.add('active');
     userDisplay.textContent = currentUser;
     listenToReservations();
-}
+});
 
 // ---------- Firestore: escuchar reservas en tiempo real ----------
 function listenToReservations() {
@@ -103,7 +73,6 @@ function listenToReservations() {
                 return {
                     id: doc.id,
                     user: data.user,
-                    uid: data.uid,
                     car: data.car,
                     priority: data.priority === true,
                     start: data.start,
@@ -179,10 +148,6 @@ function toggleReservation(carKey) {
 }
 
 function cancelReservation(reservation) {
-    if (reservation.uid !== currentUid) {
-        alert('Solo la persona que hizo la reserva puede cancelarla.');
-        return;
-    }
     db.collection('reservations').doc(reservation.id).delete()
         .catch(err => {
             console.error(err);
@@ -245,7 +210,6 @@ function confirmReservation() {
 
     db.collection('reservations').add({
         user: currentUser,
-        uid: currentUid,
         car: targetCar,
         priority: priorities.includes(currentUser),
         start: newStart.toISOString(),
@@ -253,7 +217,6 @@ function confirmReservation() {
         created: Date.now()
     })
     .then(() => {
-        // Llega solo por el listener; cerrar modal
         closeModal();
         confirmBtn.disabled = false;
         confirmBtn.textContent = 'Confirmar Reserva';
@@ -360,6 +323,3 @@ Object.keys(cars).forEach(key => {
 document.getElementById('any-btn').addEventListener('click', () => toggleReservation('any'));
 closeModalBtn.addEventListener('click', closeModal);
 confirmBtn.addEventListener('click', confirmReservation);
-
-// Evitar autofocus del login en mobile
-if (window.innerWidth < 600) usernameInput.blur();
