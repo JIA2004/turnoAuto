@@ -177,12 +177,22 @@ function confirmReservation() {
     const newStart = new Date(`${date}T${start}`);
     const newEnd = new Date(`${date}T${end}`);
 
+    const iAmPriority = priorities.includes(currentUser);
+
+    // Buscar reservas que se crucen con el horario pedido
+    const overlapping = reservations.filter(r => isOverlapping(r, newStart, newEnd));
+
     // Elegir auto si es "me da lo mismo"
     let targetCar = specificCarKey;
+    let bumpedReservation = null;
+
     if (wantAnyCar) {
         const freeCars = Object.keys(cars).filter(carKey => {
-            const overlap = reservations.find(r => r.car === carKey && isOverlapping(r, newStart, newEnd));
-            return !overlap;
+            const overlap = overlapping.find(r => r.car === carKey);
+            if (!overlap) return true;
+            // Prioridad puede sacar a no-prioridad
+            if (iAmPriority && !priorities.includes(overlap.user)) return true;
+            return false;
         });
         if (freeCars.length === 0) {
             modalError.textContent = "No hay ningún auto libre en ese horario. Elegí otro.";
@@ -190,17 +200,23 @@ function confirmReservation() {
             return;
         }
         targetCar = freeCars[0];
+        bumpedReservation = overlapping.find(r => r.car === targetCar && r.user !== currentUser);
     } else {
-        const overlap = reservations.find(r => r.car === targetCar && isOverlapping(r, newStart, newEnd));
+        const overlap = overlapping.find(r => r.car === targetCar);
         if (overlap) {
-            modalError.textContent = `${cars[targetCar].name} ya está ocupado ese horario por ${overlap.user}.`;
-            modalError.style.display = 'block';
-            return;
+            // Prioridad puede sacar a no-prioridad
+            if (iAmPriority && !priorities.includes(overlap.user)) {
+                bumpedReservation = overlap;
+            } else {
+                modalError.textContent = `${cars[targetCar].name} ya está ocupado ese horario por ${overlap.user}.`;
+                modalError.style.display = 'block';
+                return;
+            }
         }
     }
 
     // No podés tener 2 reservas tuyas que se crucen
-    const myOverlap = reservations.find(r => r.user === currentUser && isOverlapping(r, newStart, newEnd));
+    const myOverlap = overlapping.find(r => r.user === currentUser);
     if (myOverlap) {
         modalError.textContent = `Ya tenés una reserva que se cruza el ${formatDay(myOverlap.start)} (${cars[myOverlap.car].name}).`;
         modalError.style.display = 'block';
@@ -210,13 +226,20 @@ function confirmReservation() {
     confirmBtn.disabled = true;
     confirmBtn.textContent = 'Reservando...';
 
-    db.collection('reservations').add({
-        user: currentUser,
-        car: targetCar,
-        priority: priorities.includes(currentUser),
-        start: newStart.toISOString(),
-        end: newEnd.toISOString(),
-        created: Date.now()
+    // Si hay reserva para borrar, hacerlo primero
+    const deletePromise = bumpedReservation
+        ? db.collection('reservations').doc(bumpedReservation.id).delete()
+        : Promise.resolve();
+
+    deletePromise.then(() => {
+        return db.collection('reservations').add({
+            user: currentUser,
+            car: targetCar,
+            priority: iAmPriority,
+            start: newStart.toISOString(),
+            end: newEnd.toISOString(),
+            created: Date.now()
+        });
     })
     .then(() => {
         closeModal();
