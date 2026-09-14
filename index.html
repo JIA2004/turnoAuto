@@ -3,67 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoTurno - Reserva tu Auto</title>
+    <title>AutoTurno</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Fondo animado -->
+    <div class="bg-glow"></div>
+    <div class="bg-glow bg-glow--2"></div>
+
+    <!-- Login -->
     <div id="login-screen" class="screen active">
-        <div class="card login-card">
+        <div class="login-card glass">
+            <div class="login-logo">
+                <div class="logo-icon">A</div>
+            </div>
             <h1>AutoTurno</h1>
-            <p>¿Quién sos?</p>
-            <input type="text" id="username-input" placeholder="Escribí tu nombre..." autofocus>
-            <button id="login-btn" disabled>Ingresar</button>
+            <p class="login-sub">¿Quién sos?</p>
+            <div class="input-group">
+                <input type="text" id="username-input" placeholder="Escribí tu nombre..." autocomplete="off" autofocus>
+            </div>
+            <button id="login-btn" disabled>
+                <span>Ingresar</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
             <p id="login-error" class="modal-error"></p>
         </div>
     </div>
 
+    <!-- Main -->
     <div id="main-screen" class="screen">
         <header>
-            <h1>AutoTurno</h1>
-            <p>Bienvenido, <span id="user-display"></span></p>
-            <span id="sync-status" class="sync-status syncing">⏳ Sincronizando...</span>
+            <div class="header-top">
+                <h1>AutoTurno</h1>
+                <div class="sync-pill" id="sync-status">
+                    <span class="sync-dot"></span>
+                    <span>Sincronizando...</span>
+                </div>
+            </div>
+            <p class="welcome-text">Bienvenido, <strong id="user-display"></strong></p>
         </header>
 
         <div class="dashboard">
-            <div class="car-card" id="polo-card">
-                <div class="car-icon">🚗</div>
-                <h2>Volkswagen Polo</h2>
+            <!-- Polo -->
+            <div class="car-card glass" id="polo-card">
+                <div class="card-top">
+                    <div class="car-badge">🚗</div>
+                    <span class="card-tag tag-car">AUTO</span>
+                </div>
+                <h2>Polo</h2>
                 <div class="status" id="polo-status">Libre</div>
                 <div class="details" id="polo-details"></div>
-                <button id="polo-btn" class="action-btn">Reservar</button>
+                <button id="polo-btn" class="card-btn">Reservar</button>
             </div>
 
-            <div class="car-card" id="fox-card">
-                <div class="car-icon">🚙</div>
-                <h2>Volkswagen Fox</h2>
+            <!-- Fox -->
+            <div class="car-card glass" id="fox-card">
+                <div class="card-top">
+                    <div class="car-badge">🚙</div>
+                    <span class="card-tag tag-car">AUTO</span>
+                </div>
+                <h2>Fox</h2>
                 <div class="status" id="fox-status">Libre</div>
                 <div class="details" id="fox-details"></div>
-                <button id="fox-btn" class="action-btn">Reservar</button>
+                <button id="fox-btn" class="card-btn">Reservar</button>
             </div>
 
-            <div class="car-card any-card" id="any-card">
-                <div class="car-icon">🎲</div>
+            <!-- Cualquiera -->
+            <div class="car-card glass any-card" id="any-card">
+                <div class="card-top">
+                    <div class="car-badge">🎲</div>
+                    <span class="card-tag tag-any">CUALQUIERA</span>
+                </div>
                 <h2>Me da lo mismo</h2>
                 <div class="status" id="any-status">Auto libre</div>
-                <div class="details any-details">Te asignamos el que esté disponible</div>
-                <button id="any-btn" class="action-btn any-btn">Reservar cualquiera</button>
+                <div class="details">Te asignamos el que esté disponible</div>
+                <button id="any-btn" class="card-btn btn-any">Reservar cualquiera</button>
             </div>
         </div>
 
-        <div class="queue-section">
-            <h3>Cola de Reservas</h3>
-            <ul id="reservation-list" class="reservation-list">
-                <!-- Items will be injected here -->
-            </ul>
-            <div id="empty-queue" class="empty-msg">No hay reservas pendientes. ¡Sos el primero!</div>
+        <!-- Cola -->
+        <div class="queue-section glass">
+            <div class="queue-header">
+                <h3>Próximas reservas</h3>
+            </div>
+            <ul id="reservation-list" class="reservation-list"></ul>
+            <div id="empty-queue" class="empty-msg">
+                <div class="empty-icon">📅</div>
+                <p>No hay reservas próximas</p>
+                <small>Sacá turno para empezar</small>
+            </div>
         </div>
     </div>
 
-    <!-- Modal de Reserva -->
+    <!-- Modal -->
     <div id="reservation-modal" class="modal">
-        <div class="modal-content">
-            <button id="close-modal" class="modal-close">✕</button>
+        <div class="modal-content glass">
+            <button id="close-modal" class="modal-close">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
             <h2>Nueva Reserva</h2>
+
             <label>¿Qué auto querés?</label>
             <div class="car-choice-row">
                 <button id="choice-any" class="choice-btn active">Me da lo mismo</button>
@@ -73,23 +115,29 @@
                 <button class="mini-car-btn active" data-car="polo">🚗 Polo</button>
                 <button class="mini-car-btn" data-car="fox">🚙 Fox</button>
             </div>
+
             <label>Fecha</label>
             <input type="date" id="res-date" required>
+
+            <label>Horario</label>
             <div class="time-row">
                 <div class="time-field">
-                    <label>Desde</label>
                     <input type="time" id="res-start" value="18:00">
                 </div>
                 <div class="time-arrow">→</div>
                 <div class="time-field">
-                    <label>Hasta</label>
                     <input type="time" id="res-end" value="23:00">
                 </div>
             </div>
+
             <p id="modal-error" class="modal-error"></p>
-            <button id="confirm-reservation-btn" class="confirm-btn">Confirmar Reserva</button>
+            <button id="confirm-reservation-btn" class="card-btn btn-confirm">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                <span>Confirmar Reserva</span>
+            </button>
         </div>
     </div>
+
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="firebase-config.js"></script>

@@ -81,13 +81,15 @@ function listenToReservations() {
                 };
             });
             bookingsLoading = false;
-            syncStatus.textContent = '🟢 Sincronizado';
             syncStatus.classList.remove('syncing');
+            syncStatus.classList.add('synced');
+            syncStatus.querySelector('span:last-child').textContent = 'Sincronizado';
             render();
         }, (err) => {
             console.error('Firestore error:', err);
-            syncStatus.textContent = '🔴 Sin conexión con la base';
+            syncStatus.classList.remove('synced');
             syncStatus.classList.add('syncing');
+            syncStatus.querySelector('span:last-child').textContent = 'Sin conexión';
         });
 }
 
